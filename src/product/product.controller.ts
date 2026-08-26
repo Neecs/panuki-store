@@ -11,7 +11,7 @@ export class ProductController {
     return this.productService.createProduct(productData);
   }
 
-  @Get('flautas')
+  @Get()
   getAllProducts() {
     return this.productService.getAllProducts();
   }
