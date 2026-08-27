@@ -1,6 +1,13 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './model/product.entity';
 
 @Injectable()
@@ -12,7 +19,7 @@ export class ProductService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  async createProduct(productData: Omit<Product, 'id'>): Promise<Product> {
+  async createProduct(productData: CreateProductDto): Promise<Product> {
     const existingProduct = await this.productRepository.findOne({
       where: { name: ILike(productData.name) },
     });
@@ -34,5 +41,34 @@ export class ProductService {
 
     this.logger.log(`Retrieved ${products.length} products`);
     return products;
+  }
+
+  async updateProduct(
+    id: string,
+    productData: UpdateProductDto,
+  ): Promise<Product> {
+    const product = await this.productRepository.findOne({ where: { id } });
+
+    if (!product) {
+      this.logger.warn(`Product not found: ${id}`);
+      throw new NotFoundException('Product not found');
+    }
+
+    if (productData.name !== undefined) {
+      const existingProduct = await this.productRepository.findOne({
+        where: { name: ILike(productData.name) },
+      });
+
+      if (existingProduct && existingProduct.id !== id) {
+        this.logger.warn(`Product name already exists: ${productData.name}`);
+        throw new ConflictException('Product already exists');
+      }
+    }
+
+    Object.assign(product, productData);
+    const updatedProduct = await this.productRepository.save(product);
+
+    this.logger.log(`Product updated with id ${updatedProduct.id}`);
+    return updatedProduct;
   }
 }
