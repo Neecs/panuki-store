@@ -25,6 +25,11 @@ export class ProductController {
     return this.productService.getAllProducts();
   }
 
+  @Get(':id')
+  getProductById(@Param('id') id: string) {
+    return this.productService.getProductById(id);
+  }
+
   @Patch(':id')
   updateProduct(
     @Param('id') id: string,

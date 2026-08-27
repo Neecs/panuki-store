@@ -44,6 +44,18 @@ export class ProductService {
     return products;
   }
 
+  async getProductById(id: string): Promise<Product> {
+    const product = await this.productRepository.findOne({ where: { id } });
+
+    if (!product) {
+      this.logger.warn(`Product not found: ${id}`);
+      throw new NotFoundException('Product not found');
+    }
+
+    this.logger.log(`Retrieved product with id ${id}`);
+    return product;
+  }
+
   async updateProduct(
     id: string,
     productData: UpdateProductDto,
