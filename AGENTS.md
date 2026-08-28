@@ -26,6 +26,7 @@
 
 - Añade o actualiza pruebas junto con los cambios de comportamiento.
 - En pruebas unitarias de NestJS, registra todos los tokens inyectados por el sujeto bajo prueba, incluido `getRepositoryToken(Entity)` y los servicios usados por los controladores.
+- Divide todo cambio importante en pasos pequenos y concretos. No ejecutes ni implementes multiples pasos a la vez. Completa un paso, espera confirmacion del usuario y solo avanza al siguiente paso cuando lo indique.
 - No ejecutes comandos que no hayan sido solicitados explícitamente o que no sean necesarios para resolver el problema principal.
 - Los problemas de lint no son urgentes: prioriza la corrección del código relacionado directamente con el problema principal y atiende el lint solo si se solicita o si bloquea esa corrección.
 - Ejecuta pruebas o comandos de validación únicamente cuando se soliciten o cuando sean necesarios para confirmar la solución del problema principal.

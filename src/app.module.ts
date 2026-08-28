@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ProductModule } from './product/product.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
-import { getDatabaseConfig } from './config/database.config';
+import { getDatabaseConfig } from './config/database/database.config';
 
 @Module({
   imports: [
