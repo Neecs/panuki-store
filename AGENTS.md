@@ -6,6 +6,7 @@
 - `src/app.module.ts` configura `ConfigModule`, TypeORM y los módulos de funcionalidad.
 - Cada funcionalidad debe vivir en su propio módulo dentro de `src/` y mantener juntas sus entidades, DTOs, controladores, servicios y pruebas.
 - Usa `README.md` y `package.json` como referencias para la descripción general y los comandos disponibles.
+- Gestiona la configuración de entorno exclusivamente mediante Nest `ConfigModule` y `ConfigService`; no uses `dotenv` ni leas `process.env` directamente.
 
 ## Reglas de implementación
 
@@ -25,7 +26,9 @@
 
 - Añade o actualiza pruebas junto con los cambios de comportamiento.
 - En pruebas unitarias de NestJS, registra todos los tokens inyectados por el sujeto bajo prueba, incluido `getRepositoryToken(Entity)` y los servicios usados por los controladores.
-- Ejecuta la comprobación más específica disponible y después, cuando corresponda, `npm run lint`, `npm run build`, `npm test` o `npm run test:e2e`.
+- No ejecutes comandos que no hayan sido solicitados explícitamente o que no sean necesarios para resolver el problema principal.
+- Los problemas de lint no son urgentes: prioriza la corrección del código relacionado directamente con el problema principal y atiende el lint solo si se solicita o si bloquea esa corrección.
+- Ejecuta pruebas o comandos de validación únicamente cuando se soliciten o cuando sean necesarios para confirmar la solución del problema principal.
 - No ocultes fallos de TypeScript o ESLint con `any`, `@ts-ignore` o cambios globales de configuración.
 
 ## Comandos principales
