@@ -5,7 +5,7 @@ export const getDatabaseConfig = (
   configService: ConfigService,
 ): TypeOrmModuleOptions => {
   const isProduction: boolean =
-    configService.get<boolean>('IS_PRODUCTION') ?? false;
+    configService.get<string>('IS_PRODUCTION') === 'true';
 
   return {
     type: 'postgres',
