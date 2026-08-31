@@ -6,6 +6,7 @@ import { ProductModule } from './product/product.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { getDatabaseConfig } from './config/database/database.config';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { getDatabaseConfig } from './config/database/database.config';
       inject: [ConfigService],
       useFactory: getDatabaseConfig,
     }),
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

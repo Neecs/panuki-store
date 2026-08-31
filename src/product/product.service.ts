@@ -85,6 +85,23 @@ export class ProductService {
     return updatedProduct;
   }
 
+  async getProductImage(id: string): Promise<{ imageUrl: string }> {
+    const product = await this.productRepository.findOne({ where: { id } });
+
+    if (!product) {
+      this.logger.warn(`Product not found: ${id}`);
+      throw new NotFoundException('Product not found');
+    }
+
+    if (!product.imageUrl) {
+      this.logger.warn(`Product has no image: ${id}`);
+      throw new NotFoundException('Product has no image');
+    }
+
+    this.logger.log(`Image URL retrieved for product ${id}`);
+    return { imageUrl: product.imageUrl };
+  }
+
   async deleteProduct(id: string): Promise<DeleteProductResponseDto> {
     const product = await this.productRepository.findOne({ where: { id } });
 

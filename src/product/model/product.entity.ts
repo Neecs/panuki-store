@@ -22,6 +22,9 @@ export class Product {
   @Column({ type: 'integer' })
   stock!: number;
 
+  @Column({ name: 'image_url', type: 'varchar', length: 512, nullable: true })
+  imageUrl?: string | null;
+
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
   deletedAt?: Date | null;
 }

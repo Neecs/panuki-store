@@ -6,4 +6,6 @@ export class UpdateProductDto {
   price?: number;
 
   stock?: number;
+
+  imageUrl?: string | null;
 }

@@ -30,6 +30,11 @@ export class ProductController {
     return this.productService.getProductById(id);
   }
 
+  @Get(':id/image')
+  getProductImage(@Param('id') id: string) {
+    return this.productService.getProductImage(id);
+  }
+
   @Patch(':id')
   updateProduct(
     @Param('id') id: string,
