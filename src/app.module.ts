@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { getDatabaseConfig } from './config/database/database.config';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
       useFactory: getDatabaseConfig,
     }),
     CloudinaryModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
