@@ -8,6 +8,8 @@ import { ConfigService } from '@nestjs/config';
 import { getDatabaseConfig } from './config/database/database.config';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { UserModule } from './user/user.module';
+import { AuthController } from './auth/auth.controller';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -20,8 +22,9 @@ import { UserModule } from './user/user.module';
     }),
     CloudinaryModule,
     UserModule,
+    AuthModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AuthController],
   providers: [AppService],
 })
 export class AppModule {}
