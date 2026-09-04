@@ -1,5 +1,6 @@
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { User } from './model/user.entity';
 
@@ -20,7 +21,7 @@ export class UserService {
     return this.userRepository.findOne({ where: { id } });
   }
 
-  async createAdmin(email: string, passwordHash: string): Promise<User> {
+  async createAdmin(email: string, password: string): Promise<User> {
     const existingUser = await this.findByEmail(email);
 
     if (existingUser) {
@@ -28,6 +29,7 @@ export class UserService {
       throw new ConflictException('Admin user already exists');
     }
 
+    const passwordHash = await bcrypt.hash(password, 10);
     const user = this.userRepository.create({ email, passwordHash });
     const savedUser = await this.userRepository.save(user);
 

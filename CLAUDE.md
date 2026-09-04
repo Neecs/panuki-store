@@ -41,6 +41,12 @@ Modular NestJS architecture. Each domain lives in its own module under `src/` co
 - `model/product.entity.ts` — TypeORM entity
 - `dto/` — request/response DTOs
 
+**Authentication** (single admin user, `src/user/` + `src/auth/`):
+- `src/user/` owns the `User` entity and `UserService` (`findByEmail`, `findById`, `createAdmin` — hashes the password with `bcrypt` before persisting). `UserController` exposes `POST /user` to create the admin account; there is only ever one admin, so `createAdmin` throws `ConflictException` on a second call — this is the endpoint's only protection, there is no guard on it and no seed script. Call it once (e.g. via Postman) after deploying.
+- `src/auth/` owns login and route protection: `AuthController` (`POST /auth/login`), `AuthService` (verifies credentials with `bcrypt.compare`, signs a JWT via `JwtService`), `strategies/jwt.strategy.ts` (`passport-jwt`, verifies the token and re-checks the user still exists in the DB), `guards/jwt-auth.guard.ts` (`JwtAuthGuard`, wraps the `'jwt'` Passport strategy).
+- Protect a route by adding `@UseGuards(JwtAuthGuard)` to the controller method (see `product.controller.ts`'s `createProduct`/`updateProduct`/`deleteProduct` — reads stay public).
+- `AuthModule` must be imported in `app.module.ts` even though nothing injects from it directly — instantiating `JwtStrategy` as a provider is what registers it with Passport under the `'jwt'` name that `JwtAuthGuard` looks up at request time.
+
 ## Development Rules
 
 - Use `ConfigModule`/`ConfigService` for environment access; never use `dotenv` or read `process.env` directly (exception: `data-source.ts` for CLI).
@@ -55,7 +61,9 @@ Modular NestJS architecture. Each domain lives in its own module under `src/` co
 
 ## Environment Variables
 
-Required in `.env`: `PORT`, `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_NAME`, `IS_PRODUCTION`
+Required in `.env`: `PORT`, `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_NAME`, `IS_PRODUCTION`, `JWT_SECRET`, `JWT_EXPIRES_IN`
+
+`JWT_SECRET` is read with `ConfigService.getOrThrow` (both when signing in `AuthModule` and verifying in `JwtStrategy`) — the app refuses to boot without it. `JWT_EXPIRES_IN` is a number of seconds (e.g. `3600`), not a duration string; defaults to `3600` if unset.
 
 ## Database
 
