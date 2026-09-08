@@ -10,6 +10,8 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(@Body() loginDto: LoginDto): Promise<LoginResponseDto> {
-    return this.authService.login(loginDto);
+    return this.authService
+      .login(loginDto)
+      .then((accessToken) => new LoginResponseDto(accessToken));
   }
 }

@@ -7,7 +7,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
-import { DeleteProductResponseDto } from './dto/delete-product-response.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './model/product.entity';
 
@@ -102,7 +101,7 @@ export class ProductService {
     return { imageUrl: product.imageUrl };
   }
 
-  async deleteProduct(id: string): Promise<DeleteProductResponseDto> {
+  async deleteProduct(id: string): Promise<void> {
     const product = await this.productRepository.findOne({ where: { id } });
 
     if (!product) {
@@ -113,6 +112,5 @@ export class ProductService {
     await this.productRepository.softDelete(id);
 
     this.logger.log(`Product soft deleted with id ${id}`);
-    return new DeleteProductResponseDto('Product deleted successfully', id);
   }
 }
