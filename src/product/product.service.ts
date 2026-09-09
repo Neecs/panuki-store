@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { DeleteProductResponseDto } from './dto/delete-product-response.dto';
+import { ProductResponseDto } from './dto/product-response.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './model/product.entity';
 
@@ -20,7 +21,9 @@ export class ProductService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  async createProduct(productData: CreateProductDto): Promise<Product> {
+  async createProduct(
+    productData: CreateProductDto,
+  ): Promise<ProductResponseDto> {
     const existingProduct = await this.productRepository.findOne({
       where: { name: ILike(productData.name) },
     });
@@ -34,17 +37,17 @@ export class ProductService {
     const savedProduct = await this.productRepository.save(product);
 
     this.logger.log(`Product created with id ${savedProduct.id}`);
-    return savedProduct;
+    return new ProductResponseDto(savedProduct);
   }
 
-  async getAllProducts(): Promise<Product[]> {
+  async getAllProducts(): Promise<ProductResponseDto[]> {
     const products = await this.productRepository.find();
 
     this.logger.log(`Retrieved ${products.length} products`);
-    return products;
+    return products.map((product) => new ProductResponseDto(product));
   }
 
-  async getProductById(id: string): Promise<Product> {
+  async getProductById(id: string): Promise<ProductResponseDto> {
     const product = await this.productRepository.findOne({ where: { id } });
 
     if (!product) {
@@ -53,13 +56,13 @@ export class ProductService {
     }
 
     this.logger.log(`Retrieved product with id ${id}`);
-    return product;
+    return new ProductResponseDto(product);
   }
 
   async updateProduct(
     id: string,
     productData: UpdateProductDto,
-  ): Promise<Product> {
+  ): Promise<ProductResponseDto> {
     const product = await this.productRepository.findOne({ where: { id } });
 
     if (!product) {
@@ -82,7 +85,7 @@ export class ProductService {
     const updatedProduct = await this.productRepository.save(product);
 
     this.logger.log(`Product updated with id ${updatedProduct.id}`);
-    return updatedProduct;
+    return new ProductResponseDto(updatedProduct);
   }
 
   async getProductImage(id: string): Promise<{ imageUrl: string }> {
