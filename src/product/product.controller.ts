@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateProductDto } from './dto/create-product.dto';
-import { DeleteProductResponseDto } from './dto/delete-product-response.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
 
@@ -50,12 +49,7 @@ export class ProductController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  deleteProduct(@Param('id') id: string): Promise<DeleteProductResponseDto> {
-    return this.productService
-      .deleteProduct(id)
-      .then(
-        () =>
-          new DeleteProductResponseDto('Product deleted successfully', id),
-      );
+  deleteProduct(@Param('id') id: string) {
+    return this.productService.deleteProduct(id);
   }
 }

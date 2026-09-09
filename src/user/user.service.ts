@@ -2,6 +2,7 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
+import { UserResponseDto } from './dto/user-response.dto';
 import { User } from './model/user.entity';
 
 @Injectable()
@@ -21,7 +22,7 @@ export class UserService {
     return this.userRepository.findOne({ where: { id } });
   }
 
-  async createAdmin(email: string, password: string): Promise<User> {
+  async createAdmin(email: string, password: string): Promise<UserResponseDto> {
     const existingUser = await this.findByEmail(email);
 
     if (existingUser) {
@@ -34,6 +35,6 @@ export class UserService {
     const savedUser = await this.userRepository.save(user);
 
     this.logger.log(`Admin user created with id ${savedUser.id}`);
-    return savedUser;
+    return new UserResponseDto(savedUser.id, savedUser.email);
   }
 }
