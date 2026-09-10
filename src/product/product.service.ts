@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { DeleteProductResponseDto } from './dto/delete-product-response.dto';
 import { ProductResponseDto } from './dto/product-response.dto';
@@ -19,10 +20,12 @@ export class ProductService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async createProduct(
     productData: CreateProductDto,
+    image?: Express.Multer.File,
   ): Promise<ProductResponseDto> {
     const existingProduct = await this.productRepository.findOne({
       where: { name: ILike(productData.name) },
@@ -33,11 +36,30 @@ export class ProductService {
       throw new ConflictException('Product already exists');
     }
 
-    const product = this.productRepository.create(productData);
-    const savedProduct = await this.productRepository.save(product);
+    let imageUrl: string | undefined;
+    let imagePublicId: string | undefined;
+    if (image) {
+      const uploadResult = await this.cloudinaryService.uploadImage(image);
+      imageUrl = uploadResult.url;
+      imagePublicId = uploadResult.publicId;
+    }
 
-    this.logger.log(`Product created with id ${savedProduct.id}`);
-    return new ProductResponseDto(savedProduct);
+    const product = this.productRepository.create({
+      ...productData,
+      imageUrl,
+      imagePublicId,
+    });
+
+    try {
+      const savedProduct = await this.productRepository.save(product);
+      this.logger.log(`Product created with id ${savedProduct.id}`);
+      return new ProductResponseDto(savedProduct);
+    } catch (error) {
+      if (imagePublicId) {
+        await this.cloudinaryService.deleteImage(imagePublicId);
+      }
+      throw error;
+    }
   }
 
   async getAllProducts(): Promise<ProductResponseDto[]> {
@@ -62,6 +84,7 @@ export class ProductService {
   async updateProduct(
     id: string,
     productData: UpdateProductDto,
+    image?: Express.Multer.File,
   ): Promise<ProductResponseDto> {
     const product = await this.productRepository.findOne({ where: { id } });
 
@@ -81,8 +104,21 @@ export class ProductService {
       }
     }
 
+    const previousImagePublicId = product.imagePublicId;
+
     Object.assign(product, productData);
+
+    if (image) {
+      const uploadResult = await this.cloudinaryService.uploadImage(image);
+      product.imageUrl = uploadResult.url;
+      product.imagePublicId = uploadResult.publicId;
+    }
+
     const updatedProduct = await this.productRepository.save(product);
+
+    if (image && previousImagePublicId) {
+      await this.cloudinaryService.deleteImage(previousImagePublicId);
+    }
 
     this.logger.log(`Product updated with id ${updatedProduct.id}`);
     return new ProductResponseDto(updatedProduct);

@@ -8,6 +8,7 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class UpdateProductDto {
   @IsOptional()
@@ -24,15 +25,12 @@ export class UpdateProductDto {
   @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
   @IsPositive()
+  @Type(() => Number)
   price?: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
+  @Type(() => Number)
   stock?: number;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(512)
-  imageUrl?: string | null;
 }

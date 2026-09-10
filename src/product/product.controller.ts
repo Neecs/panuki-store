@@ -6,10 +6,18 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import {
+  imageUploadOptions,
+  optionalProductImagePipe,
+} from '../config/multer/image-upload.config';
 import { CreateProductDto } from './dto/create-product.dto';
+import { ProductResponseDto } from './dto/product-response.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
 
@@ -19,8 +27,12 @@ export class ProductController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  createProduct(@Body() productData: CreateProductDto) {
-    return this.productService.createProduct(productData);
+  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
+  createProduct(
+    @Body() productData: CreateProductDto,
+    @UploadedFile(optionalProductImagePipe) image?: Express.Multer.File,
+  ): Promise<ProductResponseDto> {
+    return this.productService.createProduct(productData, image);
   }
 
   @Get()
@@ -40,11 +52,13 @@ export class ProductController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   updateProduct(
     @Param('id') id: string,
     @Body() productData: UpdateProductDto,
-  ) {
-    return this.productService.updateProduct(id, productData);
+    @UploadedFile(optionalProductImagePipe) image?: Express.Multer.File,
+  ): Promise<ProductResponseDto> {
+    return this.productService.updateProduct(id, productData, image);
   }
 
   @Delete(':id')

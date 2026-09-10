@@ -25,6 +25,14 @@ export class Product {
   @Column({ name: 'image_url', type: 'varchar', length: 512, nullable: true })
   imageUrl?: string | null;
 
+  @Column({
+    name: 'image_public_id',
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
+  imagePublicId?: string | null;
+
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
   deletedAt?: Date | null;
 }
