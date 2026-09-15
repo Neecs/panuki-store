@@ -61,7 +61,9 @@ Modular NestJS architecture. Each domain lives in its own module under `src/` co
 
 ## Environment Variables
 
-Required in `.env`: `PORT`, `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_NAME`, `IS_PRODUCTION`, `JWT_SECRET`, `JWT_EXPIRES_IN`
+Required in `.env`: `PORT`, `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_NAME`, `DB_SSL`, `IS_PRODUCTION`, `JWT_SECRET`, `JWT_EXPIRES_IN`
+
+`DB_SSL=true` enables TLS on the Postgres connection (required for the production DB on Neon); use `false` for a local Postgres. Production migrations are loaded from `dist/database/migrations/*.js` and run on startup (`migrationsRun`).
 
 `JWT_SECRET` is read with `ConfigService.getOrThrow` (both when signing in `AuthModule` and verifying in `JwtStrategy`) — the app refuses to boot without it. `JWT_EXPIRES_IN` is a number of seconds (e.g. `3600`), not a duration string; defaults to `3600` if unset.
 

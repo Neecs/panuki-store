@@ -14,11 +14,12 @@ export const getDatabaseConfig = (
     username: configService.get<string>('DB_USERNAME'),
     password: configService.get<string>('DB_PASSWORD'),
     database: configService.get<string>('DB_NAME'),
+    ssl: configService.get<string>('DB_SSL') === 'true',
     autoLoadEntities: true,
     synchronize: !isProduction,
     migrationsRun: isProduction,
     migrations: isProduction
-      ? ['dist/migrations/*.js']
-      : ['src/migrations/*.ts'],
+      ? ['dist/database/migrations/*.js']
+      : ['src/database/migrations/*.ts'],
   };
 };

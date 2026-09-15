@@ -11,10 +11,11 @@ export default new DataSource({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
+  ssl: process.env.DB_SSL === 'true',
 
   entities: isProduction ? ['dist/**/*.entity.js'] : ['src/**/*.entity.ts'],
 
   migrations: isProduction
-    ? ['dist/migrations/*.js']
+    ? ['dist/database/migrations/*.js']
     : ['src/database/migrations/*.ts'],
 });
