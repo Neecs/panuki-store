@@ -18,8 +18,6 @@ export const getDatabaseConfig = (
     autoLoadEntities: true,
     synchronize: !isProduction,
     migrationsRun: isProduction,
-    migrations: isProduction
-      ? ['dist/database/migrations/*.js']
-      : ['src/database/migrations/*.ts'],
+    migrations: isProduction ? ['dist/database/migrations/*.js'] : [],
   };
 };
